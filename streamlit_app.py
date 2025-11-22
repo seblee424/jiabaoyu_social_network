@@ -7,9 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import streamlit.components.v1 as components
 
-# ==========================================
-# 1. 页面配置与样式
-# ==========================================
+
 st.set_page_config(
     page_title="贾宝玉社会网络演变分析",
     page_icon="🏮",
@@ -17,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 自定义CSS以增加学术感
+
 st.markdown("""
     <style>
     .main {
@@ -58,9 +56,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. 数据源定义
-# ==========================================
+
 DATA_SOURCES = {
     "Phase 1: 天真少年 (19-23回)": {
         "edges": "https://raw.githubusercontent.com/seblee424/jiabaoyu_social_network/main/edges_phase1_%E5%A4%A9%E7%9C%9F%E5%B0%91%E5%B9%B4(19-23%E5%9B%9E).csv",
@@ -79,9 +75,6 @@ DATA_SOURCES = {
     }
 }
 
-# ==========================================
-# 3. 数据处理与计算函数
-# ==========================================
 @st.cache_data
 def load_data(edges_url, nodes_url):
     try:
@@ -118,9 +111,6 @@ def calculate_metrics(G):
     nx.set_node_attributes(G, partition, 'group')
     return G, density, modularity_score, degree_dict, betweenness_dict, partition
 
-# ==========================================
-# 4. 可视化函数
-# ==========================================
 def visualize_network(G, partition):
     net = Network(height="600px", width="100%", bgcolor="#ffffff", font_color="black")
     unique_communities = list(set(partition.values()))
@@ -158,9 +148,6 @@ def visualize_network(G, partition):
         HtmlFile = open('pyvis_graph.html', 'r', encoding='utf-8')
         return HtmlFile.read()
 
-# ==========================================
-# 5. 主程序逻辑
-# ==========================================
 def main():
     st.sidebar.title("📖 导航栏")
     st.sidebar.info("李子睿 CHC5904 Hands-on Assignment2")
@@ -187,8 +174,7 @@ def main():
         if edges_df is not None and nodes_df is not None:
             G = create_graph(edges_df, nodes_df)
             G, density, modularity, degree, betweenness, partition = calculate_metrics(G)
-            
-            # 1. 指标卡片
+  
             st.subheader("📊 网络整体指标 (Network Metrics)")
             col1, col2, col3, col4 = st.columns(4)
             col1.metric("Nodes (节点数)", G.number_of_nodes())
@@ -202,13 +188,11 @@ def main():
                 - **Modularity**: 衡量网络划分成社群的好坏程度。值越高说明社群分化越明显。
                 """)
 
-            # 2. 交互图
             st.subheader("🕸️ 交互式网络可视化 (Interactive Visualization)")
             st.markdown("节点大小 = 度中心性 | 节点颜色 = 社群 (Community) | 布局 = Force Atlas 2")
             html_data = visualize_network(G, partition)
             components.html(html_data, height=620)
-            
-            # 3. 核心人物分析
+ 
             st.subheader("🔍 核心人物分析 (Centrality Analysis)")
             metrics_df = pd.DataFrame({
                 'Character': [G.nodes[n]['label'] for n in G.nodes],
@@ -225,7 +209,6 @@ def main():
                 st.markdown("**中介能力排名 (Top by Betweenness)**")
                 st.dataframe(metrics_df.sort_values(by='Betweenness (桥接能力)', ascending=False)[['Character', 'Betweenness (桥接能力)']].head(10), use_container_width=True)
             
-            # 4. 深度反思 (当前阶段)
             st.markdown("---")
             st.subheader("📝 阶段性深度反思 (Phase Reflection)")
             
@@ -253,9 +236,7 @@ def main():
                     "**袭人** 的 **Betweenness Centrality (中介中心性)** 在此阶段极具研究意义。 她成为了连接两个世界的“枢纽”。一边是贾宝玉构建的青春乌托邦，另一边则是贾府森严的等级秩序。当王夫人的意志通过袭人这一环介入时，外部权力便强力“入侵”了宝玉的社交网络。社会网络分析清晰地显示，这种来自高层的强力干预，瞬间打破了园内自然形成的人际流动。宝玉不再是这个网络唯一的主宰，他所珍视的平等交往，正被无可抗拒的社会规则切割、重组。"
                 )
 
-            # ==========================================
-            # 5. 最终总结 (Research Conclusion) - 始终显示
-            # ==========================================
+        
             st.markdown("---")
             st.subheader("🎓 研究总结：被规训的乌托邦 (Research Conclusion)")
             st.markdown("""
@@ -263,7 +244,7 @@ def main():
             他所谓的“成长”并非传统意义上的积极成熟，而是一个**理想的“乌托邦”被现实的“规则”慢慢攻入、解体并最终重塑的过程**。
             """)
 
-            # 使用列布局展示三个阶段的演变
+            
             col_a, col_b, col_c = st.columns(3)
             
             with col_a:
@@ -281,7 +262,6 @@ def main():
                 st.markdown("**「我被现实约束，无力招架」**")
                 st.caption("这是最残酷的阶段。封建父权（贾政/王夫人）借助守门人（袭人）强行闯入，**重写了社交网络规则**。宝玉在社交格局上丢掉了主导权，外力对网络进行“切割与重组”，说明他从组建者沦为被规训的对象。成长是带着痛苦的被动接纳。")
 
-            # 最终的结论框
             st.markdown(
                 """
                 <div class="conclusion-box">
